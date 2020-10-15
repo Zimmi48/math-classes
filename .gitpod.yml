@@ -1,0 +1,4 @@
+image: coqorg/coq:latest
+
+tasks:
+  - init: make
