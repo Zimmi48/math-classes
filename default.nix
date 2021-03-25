@@ -1,26 +1,14 @@
-{ pkgs ? (import <nixpkgs> {}), coq-version-or-url, shell ? false }:
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+{ config ? {}, withEmacs ? false, print-env ? false, do-nothing ? false,
+  update-nixpkgs ? false, ci-matrix ? false,
+  override ? {}, ocaml-override ? {}, global-override ? {},
+  task ? null, job ? null, inNixShell ? null, src ? ./.,
+}@args:
+let auto = fetchGit {
+  url = "https://github.com/coq-community/coq-nix-toolbox.git";
+  ref = "master";
+  rev = import ./.nix/coq-nix-toolbox.nix;
+}; in
+(import auto ({inherit src;} // args)).nix-auto
 
-let
-  coq-version-parts = builtins.match "([0-9]+).([0-9]+)" coq-version-or-url;
-  coqPackages =
-    if coq-version-parts == null then
-      pkgs.mkCoqPackages (import (fetchTarball coq-version-or-url) {})
-    else
-      pkgs."coqPackages_${builtins.concatStringsSep "_" coq-version-parts}";
-in
-
-with coqPackages;
-
-pkgs.stdenv.mkDerivation {
-
-  name = "math-classes";
-
-  propagatedBuildInputs = [
-    coq
-    bignums
-  ];
-
-  src = if shell then null else ./.;
-
-  installFlags = "COQMF_COQLIB=$(out)/lib/coq/${coq.coq-version}/";
-}

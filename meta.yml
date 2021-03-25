@@ -4,6 +4,7 @@ shortname: math-classes
 organization: coq-community
 community: true
 action: true
+nix: true
 ci_extra_dev: true
 doi: 10.1017/S0960129511000119
 
@@ -61,8 +62,42 @@ tested_coq_opam_versions:
 dependencies:
 - opam:
     name: coq-bignums
-  nix: bignums
   description: "[BigNums](https://github.com/coq/bignums)"
+
+cachix:
+- name: coq
+- name: coq-community
+  token: CACHIX_AUTH_TOKEN
+
+nix-jobs:
+- job: math-classes
+  name: Math-Classes
+- job: corn
+  name: Corn
+  needs:
+  - math-classes
+
+nix-tasks:
+- task: Coq 8.11 + Corn
+  packages:
+  - name: coq
+    version: '8.11'
+  - name: math-classes
+    job: math-classes
+  - name: corn
+    job: corn
+- task: Coq 8.12
+  packages:
+  - name: coq
+    version: '8.12'
+  - name: math-classes
+    job: math-classes
+- task: Coq 8.13
+  packages:
+  - name: coq
+    version: '8.13'
+  - name: math-classes
+    job: math-classes
 
 namespace: MathClasses
 
